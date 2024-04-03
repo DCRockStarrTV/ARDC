@@ -44,7 +44,6 @@ public class Player : MonoBehaviour
 
         if (collision.CompareTag("Obstacle"))
         {
-            GamePlay.Instance.GameEnded();
             Destroy(gameObject);
         }
     }
