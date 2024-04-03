@@ -7,6 +7,9 @@ TagManager:
   - Side
   - Top
   - Obstacle
+  - HighScore
+  - Left
+  - Right
   layers:
   - Default
   - TransparentFX

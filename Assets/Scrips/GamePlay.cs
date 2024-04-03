@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using TMPro;
 
 public class GamePlay : MonoBehaviour
 {
@@ -21,8 +21,9 @@ public class GamePlay : MonoBehaviour
 
         score = 0;
         currentLevel = 0;
+        _scoreText.text = "0";
 
-        scoreSpeed = levelSpeed[currentLevel];
+        scoreSpeed = _levelSpeed[currentLevel];
 
         for (int i = 0; i < 8; i++)
         {
@@ -32,16 +33,16 @@ public class GamePlay : MonoBehaviour
 
     #endregion
 
-    #region SCORE
+    #region  SCORE
 
     private float score;
     private float scoreSpeed;
     private int currentLevel;
-    [SerializeField] private List<int> levelSpeed, levelMax;
+    [SerializeField] private List<int> _levelSpeed, _levelMax;
 
-    [SerializeField] private TMP_Text scoreText;
-    [SerializeField] private GameObject obstaclePrefab;
-    [SerializeField] private float spawnX, spawnY;
+    [SerializeField] private TMP_Text _scoreText;
+    [SerializeField] private GameObject _obstaclePrefab;
+    [SerializeField] private float _spawnX, _spawnY;
 
     private void Update()
     {
@@ -49,30 +50,30 @@ public class GamePlay : MonoBehaviour
 
         score += scoreSpeed * Time.deltaTime;
 
-        scoreText.text = ((int)score).ToString();
+        _scoreText.text = ((int)score).ToString();
 
-        if (score > levelMax[Mathf.Clamp(currentLevel + 1, 0, levelMax.Count - 1)])
+        if (score > _levelMax[Mathf.Clamp(currentLevel, 0, _levelMax.Count - 1)])
         {
             SpawnObstacle();
-            currentLevel = Mathf.Clamp(currentLevel + 1, 0, levelMax.Count - 1);
-            scoreSpeed = levelSpeed[currentLevel];
+            currentLevel = Mathf.Clamp(currentLevel + 1, 0, _levelMax.Count - 1);
+            scoreSpeed = _levelSpeed[currentLevel];
         }
     }
 
     private void SpawnObstacle()
     {
-        Vector3 spawnPos = new Vector3(Random.Range(spawnX, spawnX), Random.Range(spawnY, spawnY), 0f);
+        Vector3 spawnPos = new Vector3(Random.Range(-_spawnX, _spawnX), Random.Range(-_spawnY, _spawnY), 0f);
         RaycastHit2D hit = Physics2D.CircleCast(spawnPos, 1f, Vector2.zero);
         bool canSpawn = hit;
 
         while (canSpawn)
         {
-            spawnPos = new Vector3(Random.Range(spawnX, spawnX), Random.Range(spawnY, spawnY), 0f);
+            spawnPos = new Vector3(Random.Range(-_spawnX, _spawnX), Random.Range(-_spawnY, _spawnY), 0f);
             hit = Physics2D.CircleCast(spawnPos, 1f, Vector2.zero);
             canSpawn = hit;
         }
 
-        Instantiate(obstaclePrefab, spawnPos, Quaternion.identity);
+        Instantiate(_obstaclePrefab, spawnPos, Quaternion.identity);
     }
 
     #endregion
@@ -86,10 +87,10 @@ public class GamePlay : MonoBehaviour
         
         hasGameFinished = true;
         GameManager.Instance.CurrentScore = (int)score;
-        //StartCoroutine(GameOver());
+        StartCoroutine(GameOver());
     }
 
-    private IEnumerable GameOver()
+    private IEnumerator GameOver()
     {
         yield return new WaitForSeconds(2f);
         GameManager.Instance.GoToMainMenu();

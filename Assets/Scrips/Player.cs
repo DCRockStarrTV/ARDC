@@ -2,44 +2,44 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float Speed;
-    private Vector2 Direction;
+    [SerializeField] private float _moveSpeed;
+
+    private Vector2 moveDirection;
 
     private void Awake()
     {
-        Direction = Vector2.up;
+        moveDirection = Vector2.up;
     }
 
-    // Update is called once per frame
     private void Update()
     {
         if (Input.GetMouseButton(0))
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
-            Direction = (mousePos2D - (Vector2)transform.position).normalized;
+            moveDirection = (mousePos2D - (Vector2)transform.position).normalized;
 
-            float cosAngle = Mathf.Acos(Direction.x) * Mathf.Rad2Deg;
+            float cosAngle = Mathf.Acos(moveDirection.x) * Mathf.Rad2Deg;
 
-            transform.rotation = Quaternion.Euler(0, 0, cosAngle * (Direction.y > 0f ? 1f : -1f));
+            transform.rotation = Quaternion.Euler(0, 0, cosAngle * (moveDirection.y > 0f ? 1f : -1f));
         }
     }
 
     private void FixedUpdate()
     {
-        transform.position += (Vector3)(Speed * Time.fixedDeltaTime * Direction);
+        transform.position += (Vector3)(_moveSpeed * Time.fixedDeltaTime * moveDirection);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Side"))
         {
-            Direction.x *= -1f;
+            moveDirection.x *= -1f;
         }
 
         if (collision.CompareTag("Top"))
         {
-            Direction.y *= -1f;
+            moveDirection.y *= -1f;
         }
 
         if (collision.CompareTag("Obstacle"))
